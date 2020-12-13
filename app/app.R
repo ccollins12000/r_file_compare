@@ -52,7 +52,7 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
   #file data
-  all_file_data <- reactiveValues(files = list(), file_count=0)
+  all_file_data <- reactiveValues(files = list(), file_count=0, file_names = list())
   file_upload_options <- observeEvent(input$file, {
       req(input$file)
       
@@ -70,7 +70,9 @@ server <- function(input, output, session) {
   file_upload <- observeEvent(input$import, {
       #Upload File
       req(input$file)
-      
+    
+    
+    
       #load data
       file_info <- load_file(
         name=input$file$name, 
@@ -81,6 +83,8 @@ server <- function(input, output, session) {
       all_file_data$files <- append(all_file_data$files, file_info)
       all_file_data$file_count <- all_file_data$file_count + 1
       file_id <- paste0(all_file_data$file_count, '_', input$file$name)
+      all_file_data$file_names <- append(all_file_data$file_names, file_id)
+      
       
       #add tqb for file contents
       insertTab(inputId = "all_files",
