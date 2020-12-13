@@ -17,58 +17,46 @@ ui <- fluidPage(
      sidebarPanel(
        #Import first file
        fileInput(
-         inputId="file1",
-         label="First File: ",
-         accept = ".xlsx"
-       ),
-       #Import second file
-       fileInput(
-         inputId="file2",
-         label="Second File: ",
+         inputId="file",
+         label="Upload Files: ",
          accept = ".xlsx"
        )
      )
       ,
       
       mainPanel(
-        tabsetPanel(type = "tabs",
-                    tabPanel("Instructions", p('Upload files to begin')),
-                    tabPanel("File 1", 
-                             tableOutput(outputId="file1_data")
-                             ),
-                    tabPanel("File 2", 
-                             tableOutput(outputId="file2_data")
+        tabsetPanel(id = 'all_files',
+                    tabPanel("Instructions", p('Upload files to begin'))
                     )
         )
         
       )
    )
-)
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-  
+  all_file_data <- reactiveValues(files = list(), file_count=0)
   #file1###################################
-  file1_data <- reactive({
-    req(input$file1)
-    load_file(input$file1$name, input$file1$datapath)
-  })
-  
-  output$file1_data <- renderTable({
-    file1_data()
-  })
-  ###########################################
-  
-  #file2###################################
-  file2_data <- reactive({
-    req(input$file2)
-    load_file(input$file2$name, input$file2$datapath)
-  })
-  
-  output$file2_data <- renderTable({
-    file2_data()
-  })
-  ###########################################
+  file_tab <- observeEvent(input$file, {
+      req(input$file)
+      
+      file_info <- load_file(input$file$name, input$file$datapath)
+      all_file_data$files <- append(all_file_data$files, file_info)
+      all_file_data$file_count <- all_file_data$file_count + 1
+      file_id <- paste0(all_file_data$file_count, '_', input$file$name)
+      
+      insertTab(inputId = "all_files",
+                tabPanel(file_id, tableOutput(outputId=file_id)),
+                target='Instructions',
+                position = "after")
+      
+      output[[file_id]] <- renderTable({
+        file_info
+      })
+      
+  }
+
+  )
 }
 
 # Run the application 
