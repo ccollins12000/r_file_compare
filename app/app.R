@@ -8,7 +8,6 @@ options(shiny.maxRequestSize = 1000 * 1024^2)
 
 # Define UI
 ui <- fluidPage(
-   
    # Application title
    titlePanel("File Compare"),
    
@@ -16,29 +15,42 @@ ui <- fluidPage(
    sidebarLayout(
      
      sidebarPanel(
-       #Import first file
-       fileInput(inputId="file",
-                 label="Browse for File: ",
-                 accept = ".xlsx"
-       ),
-       numericInput(inputId = 'start_row',
-          label = 'Start Row',
-          value=1,
-          min=1,
-          max=1048576,
-          step=1
-        ),
-       selectInput(
-         inputId='sheet',
-         label='Worksheet',
-         choices=c(),
-         selected = NULL,
-         multiple = FALSE
-       ),
-       actionButton(
-         inputId="import", 
-         label="Import File"
-       )
+       div(class='import',
+         h4("1. Import Files "),
+         #Import first file
+         fileInput(inputId="file",
+                   label="Browse for File: ",
+                   accept = ".xlsx"
+         ),
+         numericInput(inputId = 'start_row',
+            label = 'Start Row',
+            value=1,
+            min=1,
+            max=1048576,
+            step=1
+          ),
+         selectInput(
+           inputId='sheet',
+           label='Worksheet',
+           choices=c(),
+           selected = NULL,
+           multiple = FALSE
+         ),
+         actionButton(
+           inputId="import", 
+           label="Import File"
+         )
+      ),
+     div(class='specify',
+         h4('2. Specify Columns'),
+         selectInput(
+           inputId='join',
+           label='Select Join Field: ',
+           choices=c(),
+           selected = NULL,
+           multiple = FALSE
+         )
+     )
      ),
       mainPanel(
         tabsetPanel(id = 'all_files',
@@ -79,8 +91,13 @@ server <- function(input, output, session) {
         start_row=input$start_row,
         sheet=input$sheet
         )
-      all_file_data$files <- append(all_file_data$files, file_info)
+      
       all_file_data$file_count <- all_file_data$file_count + 1
+      
+      files <- all_file_data$files
+      files[[all_file_data$file_count]] <- file_info
+      all_file_data$files <- files
+      
       file_id <- paste0(all_file_data$file_count, '_', input$file$name)
       all_file_data$file_names <- append(all_file_data$file_names, file_id)
       
@@ -94,6 +111,16 @@ server <- function(input, output, session) {
       output[[file_id]] <- renderTable({
         file_info
       })
+      
+      join_columns = get_common_columns(all_file_data$files)
+      #get possible join keys
+      updateSelectInput(
+        session, 
+        inputId='join',
+        choices = join_columns,
+        selected = join_columns[[1]]
+      )
+      
     }
   )
 }
