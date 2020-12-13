@@ -20,12 +20,26 @@ ui <- fluidPage(
          inputId="file1",
          label="First File: ",
          accept = ".xlsx"
+       ),
+       #Import second file
+       fileInput(
+         inputId="file2",
+         label="Second File: ",
+         accept = ".xlsx"
        )
      )
       ,
       
       mainPanel(
-        tableOutput(outputId="file1_data")
+        tabsetPanel(type = "tabs",
+                    tabPanel("File 1", 
+                             tableOutput(outputId="file1_data")
+                             ),
+                    tabPanel("File 2", 
+                             tableOutput(outputId="file2_data")
+                    )
+        )
+        
       )
    )
 )
@@ -41,6 +55,17 @@ server <- function(input, output, session) {
   
   output$file1_data <- renderTable({
     file1_data()
+  })
+  ###########################################
+  
+  #file2###################################
+  file2_data <- reactive({
+    req(input$file2)
+    load_file(input$file2$name, input$file2$datapath)
+  })
+  
+  output$file2_data <- renderTable({
+    file2_data()
   })
   ###########################################
 }
