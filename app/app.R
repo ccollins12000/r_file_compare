@@ -32,6 +32,7 @@ ui <- fluidPage(
       
       mainPanel(
         tabsetPanel(type = "tabs",
+                    tabPanel("Instructions", p('Upload files to begin')),
                     tabPanel("File 1", 
                              tableOutput(outputId="file1_data")
                              ),
