@@ -14,6 +14,7 @@ ui <- fluidPage(
    
    # Sidebar
    sidebarLayout(
+     
      sidebarPanel(
        #Import first file
        fileInput(inputId="file",
@@ -71,8 +72,6 @@ server <- function(input, output, session) {
       #Upload File
       req(input$file)
     
-    
-    
       #load data
       file_info <- load_file(
         name=input$file$name, 
@@ -85,7 +84,6 @@ server <- function(input, output, session) {
       file_id <- paste0(all_file_data$file_count, '_', input$file$name)
       all_file_data$file_names <- append(all_file_data$file_names, file_id)
       
-      
       #add tqb for file contents
       insertTab(inputId = "all_files",
                 tabPanel(file_id, tableOutput(outputId=file_id)),
@@ -96,9 +94,7 @@ server <- function(input, output, session) {
       output[[file_id]] <- renderTable({
         file_info
       })
-      
-  }
-
+    }
   )
 }
 
