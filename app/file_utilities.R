@@ -1,10 +1,10 @@
 #janitor, openxlsx
-load_file <- function(name, path, sheet_index=1, start_row=1) {
+load_file <- function(name, path, sheet=1, start_row=1) {
   ext <- tools::file_ext(name)
   janitor::clean_names(switch(ext,
          xlsx = openxlsx::read.xlsx(
              xlsxFile=path,
-             sheet=sheet_index,
+             sheet=sheet,
              startRow=start_row,
              na.strings="",
              fillMergedCells = TRUE
