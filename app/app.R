@@ -16,8 +16,22 @@ ui <- fluidPage(
    sidebarLayout(
      sidebarPanel(
        #Import first file
+       numericInput(inputId = 'start_row',
+          label = 'Start Row',
+          value=1,
+          min=1,
+          max=1048576,
+          step=1
+        ),
+       numericInput(inputId = 'sheet',
+                    label = 'Worksheet',
+                    value=1,
+                    min=1,
+                    max=100,
+                    step=1
+       ),
        fileInput(inputId="file",
-         label="Upload Files: ",
+         label="Browse for File: ",
          accept = ".xlsx"
        )
      ),
@@ -41,7 +55,12 @@ server <- function(input, output, session) {
       req(input$file)
       
       #load data
-      file_info <- load_file(input$file$name, input$file$datapath)
+      file_info <- load_file(
+        name=input$file$name, 
+        path=input$file$datapath,
+        start_row=input$start_row,
+        sheet_index=input$sheet
+        )
       all_file_data$files <- append(all_file_data$files, file_info)
       all_file_data$file_count <- all_file_data$file_count + 1
       file_id <- paste0(all_file_data$file_count, '_', input$file$name)
