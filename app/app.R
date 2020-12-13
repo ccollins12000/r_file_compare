@@ -49,6 +49,13 @@ ui <- fluidPage(
            choices=c(),
            selected = NULL,
            multiple = FALSE
+         ),
+         selectInput(
+           inputId='compare',
+           label='Select Compare Columns: ',
+           choices=c(),
+           selected = NULL,
+           multiple = TRUE
          )
      )
      ),
@@ -112,15 +119,19 @@ server <- function(input, output, session) {
         file_info
       })
       
-      join_columns = get_common_columns(all_file_data$files)
+      common_columns = get_common_columns(all_file_data$files)
       #get possible join keys
       updateSelectInput(
         session, 
         inputId='join',
-        choices = join_columns,
-        selected = join_columns[[1]]
+        choices = common_columns,
+        selected = common_columns[[1]]
       )
-      
+      updateSelectInput(
+        session, 
+        inputId='compare',
+        choices = common_columns
+      )
     }
   )
 }
