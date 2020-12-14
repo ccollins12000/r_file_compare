@@ -27,4 +27,16 @@ get_common_columns <- function(data_frame_list){
   }
   Reduce(intersect, column_names)
 }
+
+join_data <- function(datasets, dataset_names, join_vector){
   
+  combined_data = datasets[[1]]
+  
+  for(index in 2:length(datasets)){
+    combined_data <- combined_data %>% 
+      full_join(datasets[[index]], 
+                by=join_vector, 
+                suffix =c(paste0('_', dataset_names[[index-1]]),  paste0('_', dataset_names[[index]])))
+  }
+  combined_data
+}

@@ -120,7 +120,8 @@ server <- function(input, output, session) {
       })
       
       common_columns = get_common_columns(all_file_data$files)
-      #get possible join keys
+      
+      #get possible join keys and output columns
       updateSelectInput(
         session, 
         inputId='join',
