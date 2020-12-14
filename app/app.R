@@ -57,12 +57,21 @@ ui <- fluidPage(
            selected = NULL,
            multiple = TRUE
          )
-     )
+     ),
+     div(class='join_data',
+         actionButton(
+           inputId="run_compare",
+           label="Compare Files"
+         )
+      )
      ),
       mainPanel(
         tabsetPanel(id = 'all_files',
           tabPanel("Instructions", 
             p('Upload files to begin')
+          ),
+          tabPanel("Combined file",
+            tableOutput(outputId='combined_data')
           )
         )
       )
@@ -72,7 +81,13 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
   #file data
-  all_file_data <- reactiveValues(files = list(), file_count=0, file_names = list())
+  all_file_data <- reactiveValues(
+    files = list(), 
+    file_count=0, 
+    file_names = list(),
+    transform_files = list(),
+    combined_data = NULL
+    )
   file_upload_options <- observeEvent(input$file, {
       req(input$file)
       
@@ -135,6 +150,24 @@ server <- function(input, output, session) {
       )
     }
   )
+  
+  run_compare <- observeEvent(input$run_compare,{
+    files <- all_file_data$files
+    for(file_index in 1:length(files)){
+      files[[file_index]] <-pivot_file(
+                    files[[file_index]],
+                    key_column = input$join,
+                    keep_columns = input$compare
+                  )
+    }
+    all_file_data$transform_files <- files
+    join_on=join_on = c('field'='field')
+    join_on[input$join] <- input$join
+    
+    all_file_data$combined_data <- join_data(files, all_file_data$file_names, join_on)
+    
+    output$combined_data <- renderTable(all_file_data$combined_data)
+  })
 }
 
 # Run the application 
