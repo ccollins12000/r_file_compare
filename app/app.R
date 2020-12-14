@@ -9,21 +9,23 @@ options(shiny.maxRequestSize = 1000 * 1024^2)
 # Define UI
 ui <- fluidPage(
    # Application title
+  includeCSS('www/styles.css'),
    titlePanel("File Compare"),
    
    # Sidebar
    sidebarLayout(
      
      sidebarPanel(
-       div(class='import',
-         h4("1. Import Files "),
+       h4("1. Import files "),
+       div(class='sidebar-controlset',
+         
          #Import first file
          fileInput(inputId="file",
-                   label="Browse for File: ",
+                   label="Browse for file: ",
                    accept = ".xlsx"
          ),
          numericInput(inputId = 'start_row',
-            label = 'Start Row',
+            label = 'Start row',
             value=1,
             min=1,
             max=1048576,
@@ -38,30 +40,35 @@ ui <- fluidPage(
          ),
          actionButton(
            inputId="import", 
-           label="Import File"
+           label="Import file"
          )
       ),
-     div(class='specify',
-         h4('2. Specify Columns'),
+     br(),
+     h4('2. Specify columns'),
+     div(class='sidebar-controlset',
+         
          selectInput(
            inputId='join',
-           label='Select Join Field: ',
+           label='Select join key: ',
            choices=c(),
            selected = NULL,
            multiple = FALSE
          ),
          selectInput(
            inputId='compare',
-           label='Select Compare Columns: ',
+           label='Select compare columns: ',
            choices=c(),
            selected = NULL,
            multiple = TRUE
          )
      ),
-     div(class='join_data',
+     br(),
+     h4('3. Compare files'),
+     div(class='sidebar-controlset',
+         
          actionButton(
            inputId="run_compare",
-           label="Compare Files"
+           label="Click to compare files"
          )
       )
      ),

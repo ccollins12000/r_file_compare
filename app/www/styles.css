@@ -1,0 +1,9 @@
+.sidebar-controlset {
+  margin: 15px;
+}
+label {
+  font-weight: 400
+}
+.form-group {
+  margin-bottom: 0;
+}
