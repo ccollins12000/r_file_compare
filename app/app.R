@@ -1,6 +1,7 @@
 library(shiny)
 library(openxlsx)
 library(DT)
+library(waiter)
 
 source('file_utilities.r')
 
@@ -9,6 +10,7 @@ options(shiny.maxRequestSize = 1000 * 1024^2)
 
 # Define UI
 ui <- fluidPage(
+  
    # Application title
   includeCSS('www/styles.css'),
    titlePanel(h1("File Compare", align = "center")),
@@ -82,7 +84,7 @@ ui <- fluidPage(
                 )
           ),
           tabPanel("Combined file",
-              DT::dataTableOutput(outputId='combined_data')
+                   shinycssloaders::withSpinner(DT::dataTableOutput(outputId='combined_data'))
           )
         )
       )
@@ -116,7 +118,6 @@ server <- function(input, output, session) {
   file_upload <- observeEvent(input$import, {
       #Upload File
       req(input$file)
-    
       #load data
       file_info <- load_file(
         name=input$file$name, 
@@ -136,9 +137,11 @@ server <- function(input, output, session) {
       
       #add tqb for file contents
       insertTab(inputId = "all_files",
-                tabPanel(file_id, DT::dataTableOutput({outputId=file_id})),
+                tabPanel(file_id, shinycssloaders::withSpinner(DT::dataTableOutput({outputId=file_id}))),
                 target='Instructions',
                 position = "after")
+      
+      updateTabsetPanel(session, 'all_files', selected = file_id)
       
       #render to table
       output[[file_id]] <- DT::renderDataTable({
@@ -163,21 +166,27 @@ server <- function(input, output, session) {
   )
   
   run_compare <- observeEvent(input$run_compare,{
-    files <- all_file_data$files
-    for(file_index in 1:length(files)){
-      files[[file_index]] <-pivot_file(
-                    files[[file_index]],
-                    key_column = input$join,
-                    keep_columns = input$compare
-                  )
-    }
-    all_file_data$transform_files <- files
-    join_on=join_on = c('field'='field')
-    join_on[input$join] <- input$join
+    updateTabsetPanel(session, 'all_files', selected = 'Combined file')
+
     
-    all_file_data$combined_data <- join_data(files, all_file_data$file_names, join_on)
-    
-    output$combined_data <- DT::renderDataTable({all_file_data$combined_data})
+    output$combined_data <- DT::renderDataTable({
+      files <- all_file_data$files
+      for(file_index in 1:length(files)){
+        files[[file_index]] <-pivot_file(
+          files[[file_index]],
+          key_column = input$join,
+          keep_columns = input$compare
+        )
+      }
+      all_file_data$transform_files <- files
+      join_on=join_on = c('field'='field')
+      join_on[input$join] <- input$join
+      
+      all_file_data$combined_data <- join_data(files, all_file_data$file_names, join_on)
+      
+      all_file_data$combined_data
+      
+      })
   })
 }
 
