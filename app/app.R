@@ -77,7 +77,9 @@ ui <- fluidPage(
         h4('4. Review Files'),
         tabsetPanel(id = 'all_files',
           tabPanel("Instructions", 
-            p('Upload files to begin')
+            div(class='mainbar-controlset',
+                p('Upload files to begin')
+                )
           ),
           tabPanel("Combined file",
               DT::dataTableOutput(outputId='combined_data')

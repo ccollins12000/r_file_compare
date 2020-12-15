@@ -1,6 +1,9 @@
 .sidebar-controlset {
   margin: 15px;
 }
+.mainbar-controlset {
+  margin: 15px;
+}
 label {
   font-weight: 400
 }
