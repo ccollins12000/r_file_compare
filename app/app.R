@@ -11,7 +11,7 @@ options(shiny.maxRequestSize = 1000 * 1024^2)
 ui <- fluidPage(
    # Application title
   includeCSS('www/styles.css'),
-   titlePanel("File Compare"),
+   titlePanel(h1("File Compare", align = "center")),
    
    # Sidebar
    sidebarLayout(
@@ -74,6 +74,7 @@ ui <- fluidPage(
       )
      ),
       mainPanel(
+        h4('4. Review Files'),
         tabsetPanel(id = 'all_files',
           tabPanel("Instructions", 
             p('Upload files to begin')
