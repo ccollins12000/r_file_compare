@@ -1,5 +1,6 @@
 library(shiny)
 library(openxlsx)
+library(DT)
 
 source('file_utilities.r')
 
@@ -78,7 +79,7 @@ ui <- fluidPage(
             p('Upload files to begin')
           ),
           tabPanel("Combined file",
-            tableOutput(outputId='combined_data')
+              DT::dataTableOutput(outputId='combined_data')
           )
         )
       )
@@ -132,12 +133,12 @@ server <- function(input, output, session) {
       
       #add tqb for file contents
       insertTab(inputId = "all_files",
-                tabPanel(file_id, tableOutput(outputId=file_id)),
+                tabPanel(file_id, DT::dataTableOutput({outputId=file_id})),
                 target='Instructions',
                 position = "after")
       
       #render to table
-      output[[file_id]] <- renderTable({
+      output[[file_id]] <- DT::renderDataTable({
         file_info
       })
       
@@ -173,7 +174,7 @@ server <- function(input, output, session) {
     
     all_file_data$combined_data <- join_data(files, all_file_data$file_names, join_on)
     
-    output$combined_data <- renderTable(all_file_data$combined_data)
+    output$combined_data <- DT::renderDataTable({all_file_data$combined_data})
   })
 }
 
