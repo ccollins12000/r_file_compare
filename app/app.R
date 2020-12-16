@@ -136,7 +136,7 @@ server <- function(input, output, session) {
                 position = "after")
       
       updateTabsetPanel(session, 'all_files', selected = file_id)
-      show_modal_spinner() # show the modal window
+      show_modal_spinner(spin='fading-circle') # show the modal window
       
       #load data from file, within render datatable to trigger CSS loader
       file_info <- load_file(
@@ -175,7 +175,7 @@ server <- function(input, output, session) {
   
   run_compare <- observeEvent(input$run_compare,{
     updateTabsetPanel(session, 'all_files', selected = 'Combined file')
-    show_modal_spinner() 
+    show_modal_spinner(spin='fading-circle') 
     files <- all_file_data$files
     for(file_index in 1:length(files)){
       files[[file_index]] <-pivot_file(
