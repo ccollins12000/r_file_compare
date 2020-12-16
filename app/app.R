@@ -70,12 +70,15 @@ ui <- fluidPage(
      br(),
      h4('3. Compare files'),
      div(class='sidebar-controlset',
-         
          actionButton(
            inputId="run_compare",
            label="Click to compare files"
          )
-      )
+      ),
+     h4('4. Download data'),
+     div(class='sidebar-controlset',
+        downloadButton("downloadData", "Download")
+     )
      ),
       mainPanel(
         h4('4. Review Files'),
@@ -197,7 +200,18 @@ server <- function(input, output, session) {
       
       })
     remove_modal_spinner()
-  })
+  }
+  
+  )
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      "output.csv"
+    },
+    content = function(file) {
+      write.csv(all_file_data$combined_data, file, row.names = FALSE)
+    }
+  )
+  
 }
 
 # Run the application 
